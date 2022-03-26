@@ -6,6 +6,7 @@ import { CookieParserMiddleware } from '@nest-middlewares/cookie-parser';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
     }),
     TypeOrmModule.forRoot(),
     UsersModule,
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [
