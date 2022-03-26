@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { NoteDto } from './dtos/note.dto';
+import { CreateNoteDto } from './dtos/create-note.dto';
 import { UpdateNoteDto } from './dtos/update-note.dto';
 import { Note } from './note.entity';
 
@@ -27,7 +27,7 @@ export class NotesService {
     return note;
   }
 
-  create(body: NoteDto) {
+  create(body: CreateNoteDto) {
     const note = this.repo.create(body);
     return this.repo.save(note);
   }

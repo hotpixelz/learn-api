@@ -1,12 +1,17 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { NoteDto } from './note.dto';
 
-export class UpdateNoteDto implements Partial<NoteDto> {
+export class UpdateNoteDto {
   @IsString()
   @IsOptional()
+  @ApiProperty({ example: 'Some awesome note title', required: false })
   title?: string;
 
   @IsString()
   @IsOptional()
+  @ApiProperty({
+    example: 'Here you can put the note content',
+    required: false,
+  })
   content?: string;
 }
