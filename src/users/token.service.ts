@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 
@@ -14,12 +15,17 @@ type DecodedToken = {
 
 @Injectable()
 export class TokenService {
-  constructor(private jwtService: JwtService) {}
+  expiresIn: number;
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {
+    this.expiresIn = Number(this.configService.get<string>('JWT_EXPIRES_IN'));
+  }
 
   verify(token: string) {
     try {
-      const { exp } = this.jwtService.verify(token) as DecodedToken;
-      return exp * 1000 < Date.now();
+      this.jwtService.verify(token) as DecodedToken;
     } catch (err) {
       return false;
     }
@@ -42,14 +48,18 @@ export class TokenService {
   }
 
   signTokens(payload: TokenPayload, res: Response) {
-    const accessToken = this.jwtService.sign(payload, { expiresIn: 5 });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: 30 });
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: this.expiresIn,
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: this.expiresIn * 2,
+    });
     res.cookie('accessToken', accessToken, {
-      expires: new Date(Date.now() + 30000),
+      expires: new Date(Date.now() + this.expiresIn * 1000),
       httpOnly: false,
     });
     res.cookie('refreshToken', refreshToken, {
-      expires: new Date(Date.now() + 60000),
+      expires: new Date(Date.now() + this.expiresIn * 2000),
       httpOnly: true,
     });
   }
